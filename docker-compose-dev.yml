@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:latest
+    env_file: ./.env
+  app:
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      - DATABASE_URL
+      - SECRET_KEY
+    volumes:
+      - ./src/:/code/src
+    ports:
+      - 8000:8000
+    command: pdm run dev

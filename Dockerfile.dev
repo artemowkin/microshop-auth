@@ -1,0 +1,5 @@
+FROM python:latest
+WORKDIR /code
+COPY pyproject.toml pdm.lock src/ /code/
+RUN pip install -U pdm
+RUN pdm install

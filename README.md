@@ -1,0 +1,1 @@
+# MicroShop authentication service
