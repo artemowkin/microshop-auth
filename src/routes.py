@@ -71,7 +71,7 @@ async def refresh(refresh_token: str = Body(..., embed=True)):
     response_model=UserOut,
     responses={
         status.HTTP_200_OK: {
-            "model": TokenPair,
+            "model": UserOut,
             "description": "Returns current user binded with token from `Authorization` header"
         },
         status.HTTP_403_FORBIDDEN: {
