@@ -1,7 +1,7 @@
 import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator, UUID4
 
 
 class BaseUser(BaseModel):
@@ -22,6 +22,9 @@ class UserOut(BaseUser):
     is_stuff: bool
     is_admin: bool
 
+    class Config:
+        orm_mode = True
+
 
 class LoginData(BaseModel):
     email: EmailStr
@@ -35,7 +38,7 @@ class RegistrationData(BaseModel):
 
     @validator('password2')
     def passwords_match(cls, v, values, **kwargs):
-        if 'password1' in values and v != values['password2']:
+        if 'password1' in values and v != values['password1']:
             raise ValueError('passwords do not match')
 
         return v
@@ -54,7 +57,7 @@ class PasswordChangeData(BaseModel):
 
     @validator('new_password2')
     def passwords_match(cls, v, values, **kwargs):
-        if 'new_password1' in values and v != values['new_password2']:
+        if 'new_password1' in values and v != values['new_password1']:
             raise ValueError('passwords do not match')
 
         return v

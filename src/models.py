@@ -30,3 +30,4 @@ class User(Base):
     photo_url: Mapped[str | None] = mapped_column(String(length=500), nullable=True)
     is_stuff: Mapped[bool] = mapped_column(default=False)
     is_admin: Mapped[bool] = mapped_column(default=False)
+    password: Mapped[str] = mapped_column(String(length=500))

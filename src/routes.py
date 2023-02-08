@@ -1,9 +1,10 @@
-import datetime
-
-from fastapi import APIRouter, Body, status
+from fastapi import APIRouter, Body, status, Depends
 
 from .schemas import TokenPair, LoginData, RegistrationData, UserOut
 from .responses import IncorrectEmailOrPassword, EmailAlreadyExists, IncorrectToken
+from .handlers import AuthHandler
+from .dependencies import use_auth_handler, auth_required, use_token
+from .models import User
 
 
 router = APIRouter()
@@ -23,9 +24,10 @@ router = APIRouter()
         },
     },
 )
-async def login(data: LoginData):
+async def login(data: LoginData, auth_handler: AuthHandler = Depends(use_auth_handler)):
     """Log in user using email and password from json body"""
-    return TokenPair(access_token='sdfsdfsd', refresh_token='sdfsdfsd')
+    token_pair = await auth_handler.login(data)
+    return token_pair
 
 
 @router.post(
@@ -42,9 +44,10 @@ async def login(data: LoginData):
         }
     },
 )
-async def registration(data: RegistrationData):
+async def registration(data: RegistrationData, auth_handler: AuthHandler = Depends(use_auth_handler)):
     """Registrate new user with email and password"""
-    return TokenPair(access_token='sdfsdfsd', refresh_token='sdfsdfsd')
+    token_pair = await auth_handler.registrate(data)
+    return token_pair
 
 
 @router.post(
@@ -61,9 +64,10 @@ async def registration(data: RegistrationData):
         }
     }
 )
-async def refresh(refresh_token: str = Body(..., embed=True)):
+async def refresh(refresh_token: str = Body(..., embed=True), auth_handler: AuthHandler = Depends(use_auth_handler)):
     """Refresh access token for user"""
-    return TokenPair(access_token='sdfsdfsd', refresh_token='sdfsdfsd')
+    token_pair = await auth_handler.refresh(refresh_token)
+    return token_pair
 
 
 @router.get(
@@ -80,16 +84,9 @@ async def refresh(refresh_token: str = Body(..., embed=True)):
         },
     }
 )
-async def me():
+async def me(user: User = Depends(auth_required)):
     """Returns current user for token"""
-    return UserOut(
-        first_name='ivan',
-        last_name='ivanov',
-        email='govno@gmail.com',
-        registration_datetime=datetime.datetime(),
-        is_stuff=False,
-        is_admin=False
-    )
+    return UserOut.from_orm(user)
 
 
 @router.post(
@@ -106,6 +103,6 @@ async def me():
         },
     },
 )
-async def logout():
+async def logout(token: str = Depends(use_token), auth_handler: AuthHandler = Depends(use_auth_handler)):
     """Removes user session (refresh token will not work)"""
-    return
+    await auth_handler.logout(token)

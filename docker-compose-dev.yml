@@ -4,15 +4,19 @@ services:
   db:
     image: postgres:latest
     env_file: ./.env
+  redis:
+    image: redis:latest
   app:
     depends_on:
       - db
+      - redis
     build:
       context: .
       dockerfile: Dockerfile.dev
     environment:
       - DATABASE_URL
       - SECRET_KEY
+      - REDIS_URL
     volumes:
       - ./src/:/code/src
     ports:
