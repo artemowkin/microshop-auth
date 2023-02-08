@@ -22,10 +22,11 @@ class User(Base):
     __tablename__ = 'users'
 
     uuid = mapped_column(UUID, primary_key=True, default=uuid4)
-    first_name: Mapped[str] = mapped_column(String(length=100))
-    last_name: Mapped[str] = mapped_column(String(length=100))
+    email: Mapped[str] = mapped_column(String(length=255), unique=True)
+    first_name: Mapped[str] = mapped_column(String(length=100), nullable=True)
+    last_name: Mapped[str] = mapped_column(String(length=100), nullable=True)
     middle_name: Mapped[str | None] = mapped_column(String(length=100), nullable=True)
     registration_datetime: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
-    photo_url: Mapped[str] = mapped_column(String(length=500))
+    photo_url: Mapped[str | None] = mapped_column(String(length=500), nullable=True)
     is_stuff: Mapped[bool] = mapped_column(default=False)
     is_admin: Mapped[bool] = mapped_column(default=False)
